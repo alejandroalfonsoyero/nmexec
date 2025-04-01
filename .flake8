@@ -1,0 +1,3 @@
+[flake8]
+exclude = .git,venv,build,dep_dists,doc,pyenv,demo
+max-line-length = 79

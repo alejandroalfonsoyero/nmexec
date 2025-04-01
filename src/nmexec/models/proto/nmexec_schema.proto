@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message ModelBuilder {
+    string model_name = 1;
+    string compression = 2;
+    string model_cfg = 3;
+}
+
+message DataStream {
+    bytes data = 1;
+}
+
+message NMExecMsg {
+    oneof msg_type {
+        ModelBuilder model_builder = 1;
+        DataStream data_stream = 2;
+    }
+}
