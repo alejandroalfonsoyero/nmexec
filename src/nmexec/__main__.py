@@ -7,8 +7,8 @@ def main():
     if not isinstance(cpus, int):
         cpus = 1
 
-    HOST = os.environ.get("HOST", "127.0.0.1")
-    PORT = int(os.environ.get("PORT", 5000))
+    HOST = os.environ.get("HOST", "0.0.0.0")
+    PORT = int(os.environ.get("PORT", 9786))
 
     cluster = Cluster(host=HOST, port=PORT)
     cluster.run(workers=cpus)

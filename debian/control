@@ -3,10 +3,10 @@ Section: utils
 Priority: optional
 Maintainer: Alejandro Alfonso <alejandro.alfonso@gmail.com>
 Standards-Version: 4.6.0
-Build-Depends: debhelper-compat (= 13), python3, dh-python, python3-pip, python3-setuptools, pybuild-plugin-pyproject
+Build-Depends: debhelper-compat (= 13), python3, python3.11, dh-python, python3-pip, python3-setuptools, pybuild-plugin-pyproject
 
 Package: nmexec
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends},python3
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, python3.11
 Description: A Network Model Executor
  This package installs nmexec and sets up a systemd service.

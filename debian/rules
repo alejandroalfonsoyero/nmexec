@@ -1,7 +1,18 @@
 #! /usr/bin/make -f
 
 export DH_VERBOSE = 1
-export PYBUILD_NAME = nmexec
 
 %:
-		dh $@ --with python3.11 --buildsystem=pybuild
+	dh $@
+
+override_dh_auto_clean:
+	rm -rf build/ dist/
+	dh_auto_clean
+
+
+override_dh_auto_build:
+	python3.11 -m pip install --upgrade pip
+	python3.11 -m pip install build
+	python3.11 -m build --wheel
+
+	dh_auto_build

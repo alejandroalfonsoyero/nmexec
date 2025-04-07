@@ -10,9 +10,16 @@ case "$1" in
             groupadd --system nmexec
         fi
         # Create nmexec user if it doesn't exist
-        if ! getent user nmexec > /dev/null; then
+        if ! getent passwd nmexec > /dev/null; then
             useradd --system --gid nmexec --home /var/lib/nmexec --shell /bin/bash nmexec
         fi
+
+        rm -rf /var/lib/nmexec/venv
+        python3.11 -m venv /var/lib/nmexec/venv
+        /var/lib/nmexec/venv/bin/pip install --upgrade uv
+        /var/lib/nmexec/venv/bin/python -m uv pip install tmp/nmexec*.whl
+        rm -rf tmp/nmexec*.whl
+
         echo "Configuring nmexec"
         systemctl daemon-reload
         systemctl enable nmexec.service

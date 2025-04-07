@@ -1,1 +1,2 @@
 nmexec.service etc/systemd/system/
+dist/*.whl tmp/

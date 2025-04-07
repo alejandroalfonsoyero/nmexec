@@ -11,6 +11,8 @@ case "$1" in
 
         userdel nmexec || true
         groupdel nmexec || true
+
+        rm -rf /var/lib/nmexec/venv
     ;;
 
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
