@@ -14,11 +14,15 @@ case "$1" in
             useradd --system --gid nmexec --home /var/lib/nmexec --shell /bin/bash nmexec
         fi
 
-        rm -rf /var/lib/nmexec/venv
-        python3.11 -m venv /var/lib/nmexec/venv
+        mkdir -p /var/lib/nmexec
+        if [ ! -d /var/lib/nmexec/venv ]; then
+            python3.11 -m venv /var/lib/nmexec/venv
+        fi
         /var/lib/nmexec/venv/bin/pip install --upgrade uv
-        /var/lib/nmexec/venv/bin/python -m uv pip install tmp/nmexec*.whl
+        /var/lib/nmexec/venv/bin/python -m uv pip install -U tmp/nmexec*.whl
         rm -rf tmp/nmexec*.whl
+
+        chown -R nmexec:nmexec /var/lib/nmexec
 
         echo "Configuring nmexec"
         systemctl daemon-reload
