@@ -11,20 +11,24 @@ from typing import Optional, List
 
 from .logger import get_logger
 from .models.inverter import Inverter
+from .models.yolo9 import Yolo9Model
 
 models_map = {
-    "inverter": Inverter
+    "inverter": Inverter,
+    "yolo9": Yolo9Model
 }
 
 
 class Server:
 
-    def __init__(self, host: str, port: int, backlog: int, logger: logging.Logger):
+    def __init__(self, host: str, port: int, backlog: int, logger: logging.Logger, worker_id: int = 0):
         self._host = host
         self._port = port
         self._backlog = backlog
         self._logger = logger
         self._proc: Optional[Process] = None
+        self._worker_id = worker_id
+        self._prefix = f"[Worker {self._worker_id}]"
 
     @property
     def proc(self) -> Optional[Process]:
@@ -46,11 +50,20 @@ class Server:
                     data += chunk
 
                 await buffer.put(data)
+        except asyncio.CancelledError:
+            self._logger.info(f"{self._prefix} Reader task cancelled")
+        except asyncio.IncompleteReadError:
+            self._logger.info(f"{self._prefix} Client disconnected")
+        except ConnectionError:
+            self._logger.info(f"{self._prefix} Client disconnected")
+        except asyncio.TimeoutError:
+            self._logger.info(f"{self._prefix} Client timeout")
         except Exception as err:
+            print(type(err))
             traces = traceback.format_exception(*sys.exc_info())[1:]
             for trace in traces:
-                self._logger.debug(trace)
-                self._logger.info(err)
+                self._logger.error(f"{self._prefix} {trace}")
+                self._logger.error(f"{self._prefix} {err}")
         finally:
             await buffer.put(None)
 
@@ -67,7 +80,9 @@ class Server:
                     model_kwargs = conf["model_kwargs"]
                     model = models_map[model_name](**model_kwargs)
                 else:
-                    response = model.execute(data)
+                    x = pickle.loads(data)
+                    y = model.execute(x)
+                    response = pickle.dumps(y)
                     writer.write(struct.pack("!I", len(response)))
                     writer.write(response)
                     await writer.drain()
@@ -76,7 +91,7 @@ class Server:
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info("peername")
-        self._logger.info(f"Client connected {addr}")
+        self._logger.info(f"{self._prefix} Client connected {addr}")
         buffer = asyncio.Queue()
 
         await asyncio.gather(
@@ -92,7 +107,7 @@ class Server:
 
         server = await asyncio.start_server(self.handle_client, sock=server_socket)
         addr = server_socket.getsockname()
-        self._logger.info(f"Server started on {addr}")
+        self._logger.info(f"{self._prefix} Server started on {addr}")
 
         async with server:
             await server.serve_forever()
@@ -126,8 +141,8 @@ class Cluster:
     def run(self, workers: int):
         self.logger.info("Starting cluster")
         procs = []
-        for _ in range(workers):
-            worker = Server(self.host, self.port, self.backlog, self.logger)
+        for worker_id in range(workers):
+            worker = Server(self.host, self.port, self.backlog, self.logger, worker_id)
             self.workers.append(worker)
             procs.append(worker.run())
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=Network Model Executor
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/nmexec
+Restart=always
+User=nmexec
+Group=nmexec
+
+[Install]
+WantedBy=multi-user.target

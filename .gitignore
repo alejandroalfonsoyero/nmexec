@@ -172,3 +172,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Debian
+debian/.debhelper
+debian/nmexec
+debian/debhelper-build-stamp
+debian/files
+debian/nmexec.substvars
+debian/*.debhelper

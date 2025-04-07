@@ -6,5 +6,5 @@ class Model:
         pass
 
     @abstractmethod
-    def execute(self, input_data: bytes) -> bytes:
+    def execute(self, input_data):
         pass
