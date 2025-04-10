@@ -1,6 +1,6 @@
 from typing import Dict
 import numpy as np
-from yolo9 import YOLO9, CocoModels
+from yolo9 import YOLO9, ModelWeight
 
 from .model import Model
 
@@ -18,7 +18,7 @@ class Yolo9Model(Model):
         classes: Dict[int, float],  # class id -> confidence threshold
     ):
         self.yolo9 = YOLO9(
-            model=CocoModels(model_name),
+            model=ModelWeight(model_name),
             device=device,
             classes=classes,
             dnn=dnn,
