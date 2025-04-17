@@ -28,6 +28,7 @@ case "$1" in
         systemctl daemon-reload
         systemctl enable nmexec.service
         systemctl start nmexec.service
+        systemctl restart nmexec.service
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

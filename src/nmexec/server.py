@@ -29,6 +29,7 @@ class Server:
         self._proc: Optional[Process] = None
         self._worker_id = worker_id
         self._prefix = f"[Worker {self._worker_id}]"
+        self._chunk_size = 1024 * 1024
 
     @property
     def proc(self) -> Optional[Process]:
@@ -44,7 +45,7 @@ class Server:
                 size = struct.unpack("!I", chunk)[0]
                 data = b""
                 while len(data) < size:
-                    chunk = await reader.readexactly(size - len(data))
+                    chunk = await reader.readexactly(min(size - len(data), self._chunk_size))
                     if not chunk:
                         raise ConnectionError
                     data += chunk
@@ -84,7 +85,8 @@ class Server:
                     y = model.execute(x)
                     response = pickle.dumps(y)
                     writer.write(struct.pack("!I", len(response)))
-                    writer.write(response)
+                    for i in range(0, len(response), self._chunk_size):
+                        writer.write(response[i:i + self._chunk_size])
                     await writer.drain()
             except asyncio.QueueEmpty:
                 await asyncio.sleep(0.001)
