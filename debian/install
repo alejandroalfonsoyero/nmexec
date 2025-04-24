@@ -1,2 +1,3 @@
 nmexec.service etc/systemd/system/
+nmexec.conf etc/supervisor/conf.d/
 dist/*.whl tmp/

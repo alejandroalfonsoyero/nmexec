@@ -24,11 +24,17 @@ case "$1" in
 
         chown -R nmexec:nmexec /var/lib/nmexec
 
-        echo "Configuring nmexec"
-        systemctl daemon-reload
-        systemctl enable nmexec.service
-        systemctl start nmexec.service
-        systemctl restart nmexec.service
+        if command -v supervisorctl >/dev/null 2>&1; then
+            echo "Using supervisor"
+            supervisorctl reread
+            supervisorctl update
+        else
+            echo "Configuring nmexec"
+            systemctl daemon-reload
+            systemctl enable nmexec.service
+            systemctl start nmexec.service
+            systemctl restart nmexec.service
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
