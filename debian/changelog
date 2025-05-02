@@ -1,5 +1,5 @@
-nmexec (1.0.0) stable; urgency=medium
+nmexec (1.0.1) stable; urgency=medium
 
-  * Initial release.
+  * Update yolo9 to version 1.0.8
 
- -- Alejandro Alfonso <alejandroalfonso1994@gmail.com>  Mon, 07 Apr 2025 13:53:00 -0400
+ -- Alejandro Alfonso <alejandroalfonso1994@gmail.com>  Mon, 02 May 2025 13:53:00 -0400
