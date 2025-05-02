@@ -28,12 +28,14 @@ case "$1" in
             echo "Using supervisor"
             supervisorctl reread
             supervisorctl update
+            rm /etc/systemd/system/nmexec.service
         else
             echo "Configuring nmexec"
             systemctl daemon-reload
             systemctl enable nmexec.service
             systemctl start nmexec.service
             systemctl restart nmexec.service
+            rm /etc/supervisor/conf.d/nmexec.conf
         fi
     ;;
 
