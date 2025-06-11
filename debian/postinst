@@ -26,8 +26,8 @@ case "$1" in
 
         if command -v supervisorctl >/dev/null 2>&1; then
             echo "Using supervisor"
-            supervisorctl reread
-            supervisorctl update
+            supervisorctl reread || echo "Cloud not reread supervisor"
+            supervisorctl update || echo "Cloud not update supervisor"
             rm -rf /etc/systemd/system/nmexec.service
         else
             echo "Configuring nmexec"
