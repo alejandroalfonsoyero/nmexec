@@ -29,7 +29,7 @@ class Server:
         self._proc: Optional[Process] = None
         self._worker_id = worker_id
         self._prefix = f"[Worker {self._worker_id}]"
-        self._chunk_size = 1024 * 1024
+        self._chunk_size = 10 * 1024
 
     @property
     def proc(self) -> Optional[Process]:
@@ -60,11 +60,11 @@ class Server:
         except asyncio.TimeoutError:
             self._logger.info(f"{self._prefix} Client timeout")
         except Exception as err:
-            print(type(err))
             traces = traceback.format_exception(*sys.exc_info())[1:]
             for trace in traces:
                 self._logger.error(f"{self._prefix} {trace}")
                 self._logger.error(f"{self._prefix} {err}")
+            self._logger.error(f"{self._prefix} {err}")
         finally:
             await buffer.put(None)
 
@@ -90,6 +90,13 @@ class Server:
                     await writer.drain()
             except asyncio.QueueEmpty:
                 await asyncio.sleep(0.001)
+            except Exception as err:
+                traces = traceback.format_exception(*sys.exc_info())[1:]
+                for trace in traces:
+                    self._logger.error(f"{self._prefix} {trace}")
+                self._logger.error(f"{self._prefix} {err}")
+                self._logger.error(f"{self._prefix} {err}")
+                break
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info("peername")
@@ -138,6 +145,8 @@ class Cluster:
     def cleanup(self, signum, frame):
         for worker in self.workers:
             if isinstance(worker.proc, Process):
+                worker.proc.terminate()
+                worker.proc.join(timeout=1)
                 worker.proc.kill()
 
     def run(self, workers: int):

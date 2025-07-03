@@ -7,6 +7,8 @@ def main():
     if not isinstance(cpus, int):
         cpus = 1
 
+    cpus = min(cpus, 16)
+
     HOST = os.environ.get("HOST", "0.0.0.0")
     PORT = int(os.environ.get("PORT", 9786))
 
