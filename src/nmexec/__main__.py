@@ -9,8 +9,8 @@ def main():
 
     cpus = min(cpus, 16)
 
-    HOST = os.environ.get("HOST", "0.0.0.0")
-    PORT = int(os.environ.get("PORT", 9786))
+    HOST = os.environ.get("NMEXEC_HOST", "0.0.0.0")
+    PORT = int(os.environ.get("NMEXEC_PORT", 9786))
 
     cluster = Cluster(host=HOST, port=PORT)
     cluster.run(workers=cpus)
