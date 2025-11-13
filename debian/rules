@@ -6,13 +6,14 @@ export DH_VERBOSE = 1
 	dh $@
 
 override_dh_auto_clean:
-	rm -rf build/ dist/
+	rm -rf build dist
 	dh_auto_clean
 
 
 override_dh_auto_build:
-	python3.11 -m pip install --upgrade pip
-	python3.11 -m pip install build
+	rm -rf dist
+	python3.11 -m pip install -U build
 	python3.11 -m build --wheel
+	python3.11 -m pip download . -d ./dist
 
 	dh_auto_build

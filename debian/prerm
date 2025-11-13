@@ -6,7 +6,8 @@ set -e
 case "$1" in
     remove|purge)
         if command -v supervisorctl >/dev/null 2>&1; then
-            echo "using supervisor"
+            supervisorctl reread
+            supervisorctl update
         else
             systemctl stop nmexec.service || true
             systemctl disable nmexec.service || true
@@ -16,7 +17,7 @@ case "$1" in
         userdel nmexec || true
         groupdel nmexec || true
 
-        rm -rf /var/lib/nmexec/venv
+        rm -rf /var/lib/nmexec
     ;;
 
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
